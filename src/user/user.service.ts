@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import {Injectable, NotFoundException, UnprocessableEntityException} from '@nestjs/common';
+import {CreateUserDto} from './dto/create-user.dto';
+import {UpdateUserDto} from './dto/update-user.dto';
 import {Repository} from "typeorm";
 import {UserEntity} from "./entities/user.entity";
 import {InjectRepository} from "@nestjs/typeorm";
@@ -11,7 +11,13 @@ export class UserService {
   constructor(@InjectRepository(UserEntity) private userRepository: Repository<UserEntity>,) {
   }
 
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto) : Promise<void>  {
+
+    const data = await this.userRepository.findOneBy({ user_id: createUserDto.user_id });
+
+    if (data) {
+      throw new UnprocessableEntityException('중복된 아이디 입니다');
+    }
 
     // 사용자 입력
     const user = new UserEntity();
@@ -23,19 +29,40 @@ export class UserService {
     await this.userRepository.save(user);
   }
 
-  findAll() {
-    return `This action returns all user`;
+  findAll() : Promise<UserEntity[]> {
+    return this.userRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string) {
+    const data = await this.userRepository.findOneBy({ user_id: id });
+
+    if (!data) {
+      throw new NotFoundException('유저를 찾을 수 없습니다.');
+    }
+
+    return data;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<boolean> {
+
+    const { user_name, password } = updateUserDto;
+
+    // 변경된 user 정보
+    const user = await this.userRepository.update({ user_id :id }, {user_name, password});
+    if (user.affected !== 1) {
+      throw new NotFoundException('유저가 존재하지 않습니다.');
+    }
+
+    return true;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: string): Promise<boolean> {
+    const deleteUser = await this.userRepository.delete(id);
+
+    if (deleteUser.affected === 0) {
+      throw new NotFoundException('유저가 존재하지 않습니다.');
+    }
+
+    return true;
   }
 }

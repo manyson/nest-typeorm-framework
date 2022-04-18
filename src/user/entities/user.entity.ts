@@ -1,16 +1,17 @@
-import {Column, Entity, PrimaryColumn} from "typeorm";
+import {BaseEntity, Column, Entity, PrimaryColumn} from "typeorm";
 
 @Entity('TB_USER')
-export class UserEntity {
-  @PrimaryColumn({ length: 64 })
+export class UserEntity extends BaseEntity {
+
+  @PrimaryColumn({ type: 'varchar', length: 64, comment: '유저 아이디' })
   user_id: string;
 
-  @Column({ length: 64 })
+  @Column({ type: 'varchar', length: 64, comment: '유저 이름' })
   user_name: string;
 
-  @Column({ length: 512 })
+  @Column({ type: 'varchar', length: 512, comment: '유저 비밀번호' })
   password: string;
 
-  @Column({ length: 512 })
+  @Column({ type: 'varchar', length: 512, comment: 'salt' })
   salt: string;
 }
