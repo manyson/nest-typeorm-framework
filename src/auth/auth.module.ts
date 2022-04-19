@@ -4,7 +4,6 @@ import {JwtModule} from "@nestjs/jwt";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {UserEntity} from "../user/entities/user.entity";
 import {AuthService} from "./auth.service";
-import {JwtStrategy} from "../strategy/jwt.strategy";
 import {AuthController} from './auth.controller';
 import {LocalStrategy} from "../strategy/local.strategy";
 import {JWT_CONSTANTS} from "../constant/constants";
@@ -18,7 +17,7 @@ import {JWT_CONSTANTS} from "../constant/constants";
     }),
     TypeOrmModule.forFeature([UserEntity]),             /** 사용 entity          */
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy],
   exports: [AuthService],
   controllers: [AuthController],
 })

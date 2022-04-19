@@ -14,7 +14,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
+  /** 정상적으로 validate 되었을 때 호출 되는 함수 */
   async validate(payload: any) {
-    return { userId: payload.sub, username: payload.username };
+    return { userId: payload, username: payload.username };
   }
 }

@@ -3,6 +3,8 @@ import {InjectRepository} from "@nestjs/typeorm";
 import {UserEntity} from "../user/entities/user.entity";
 import {Repository} from "typeorm";
 import {JwtService} from "@nestjs/jwt";
+import {JWT_CONSTANTS} from "../constant/constants";
+import {makePasswordHashed} from "../common/util";
 
 @Injectable()
 export class AuthService {
@@ -12,36 +14,41 @@ export class AuthService {
   ) {}
 
   /**
-   * @author
-   * @description 단일 유저 조회
-   *
-   * @param user_id 유저 아이디
-   * @param password 유저 비밀번호
-   * @returns User
+   * 사용자 조회 처리
+   * @param userID 사용자 아이디
+   * @param password 사용자 비밀번호
+   * @returns User|null
    */
-  async validateUser(user_id: string, password: string): Promise<any> {
-    console.log('AuthService');
+  async validateUser(userID: string, password: string): Promise<any> {
 
-    const user = await this.userRepository.findOneBy({user_id: user_id});
+    /** 사용자 아이디로 조회  */
+    const user = await this.userRepository.findOneBy({userID: userID});
 
-    //사용자가 요청한 비밀번호와 DB에서 조회한 비밀번호 일치여부 검사
+    password = await makePasswordHashed(password, user.salt);
+
+    /** 비밀번호 체크 */
     if (user && user.password === password) {
       const { password, ...result } = user;
 
-      //유저 정보를 통해 토큰 값을 생성
-      const accessToken = await this.jwtService.sign(result);
+      /** 유저 정보를 통해 토큰 값을 생성 */
+      const accessToken = this.jwtService.sign(result);
 
-      //토큰 값을 추가한다.
-      result['token'] = accessToken;
-
-      //비밀번호를 제외하고 유저 정보를 반환
+      /** 토큰 값을 추가한다. */
+      result[JWT_CONSTANTS.TOKEN] = accessToken;
       return result;
     }
-    return null;
+    else{
+      return null;
+    }
   }
 
+  /**
+   * 로그인 처리
+   * @param user 사용자 정보
+   * @returns object
+   */
   async login(user: any) {
-    const payload = { user_id: user.user_id, user_name: user.user_name};
+    const payload = { userID: user.userID, userName: user.userName};
     return {
       accessToken: this.jwtService.sign(payload)
     }
