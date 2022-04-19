@@ -8,5 +8,5 @@ NestJS 프로그램을 작성할 때 TypeORM 를 사용하여 효율적으로 �
 * :white_check_mark: TypeORM 을 사용
 * :white_check_mark: Production, stage, development 환경에 따른 config 사용
 * :white_check_mark: passport-local, passport-jwt, Guards 를 통한 인증 처리
-* :white_check_mark: passport-local, passport-jwt, Guards 를 통한 인증 처리
+* :white_check_mark: 민감정보(비밀번호) 단방향 암호화
 * 
