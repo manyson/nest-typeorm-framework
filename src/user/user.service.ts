@@ -33,6 +33,7 @@ export class UserService {
     return this.userRepository.find();
   }
 
+
   async findOne(id: string) {
     const data = await this.userRepository.findOneBy({ user_id: id });
 

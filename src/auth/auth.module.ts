@@ -5,21 +5,18 @@ import {TypeOrmModule} from "@nestjs/typeorm";
 import {UserEntity} from "../user/entities/user.entity";
 import {AuthService} from "./auth.service";
 import {JwtStrategy} from "../strategy/jwt.strategy";
-import {UserModule} from "../user/user.module";
-import { AuthController } from './auth.controller';
+import {AuthController} from './auth.controller';
 import {LocalStrategy} from "../strategy/local.strategy";
-import {JWTConstants} from "../constant/constants";
+import {JWT_CONSTANTS} from "../constant/constants";
 
 @Module({
   imports: [
     PassportModule,
     JwtModule.register({
-      //토큰 서명 값 설정
-      secret: JWTConstants.secret,
-      //토큰 유효시간 (임의 60초)
-      signOptions: { expiresIn: '60s' },
+      secret: JWT_CONSTANTS.SECRET_KEY,                        /** token key           */
+      signOptions: { expiresIn: JWT_CONSTANTS.EXPIRED_TIME },  /** token expired time  */
     }),
-    TypeOrmModule.forFeature([UserEntity]),
+    TypeOrmModule.forFeature([UserEntity]),             /** 사용 entity          */
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],
   exports: [AuthService],

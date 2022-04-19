@@ -1,23 +1,15 @@
-import {
-  Injectable,
-  NestMiddleware,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
+import {Injectable, NestMiddleware,} from '@nestjs/common';
+import {NextFunction, Request, Response} from 'express';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
-    // 논리합 연산자 -> 왼쪽 피연산자가 false라면 오른쪽 피연산자가 실행
-    const name: string = req.query.name || req.body.name;
 
+    /**
+     * todo middleware 에서 구한할 로직이 있으면 해당 부분에서 구현
+     */
+    console.log(req.body);
+    console.log(req.query);
     next();
-
-    // if (name == 'Ryan') {
-    //   next();
-    // } else {
-    //   // Ryan 유저가 아니라면 허가 받지 않은 유저이기 때문에 401 Error를 반환
-    //   throw new UnauthorizedException();
-    // }
   }
 }
