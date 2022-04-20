@@ -1,47 +1,14 @@
-import {Injectable, NotFoundException, UnprocessableEntityException} from '@nestjs/common';
-import {CreateUserDto} from './dto/create-user.dto';
+import {Injectable, NotFoundException} from '@nestjs/common';
 import {UpdateUserDto} from './dto/update-user.dto';
 import {Repository} from "typeorm";
 import {UserEntity} from "./entities/user.entity";
 import {InjectRepository} from "@nestjs/typeorm";
-import {createSalt, makePasswordHashed} from "../common/util";
+import {makePasswordHashed} from "../common/util";
 
 @Injectable()
 export class UserService {
 
   constructor(@InjectRepository(UserEntity) private userRepository: Repository<UserEntity>,) {
-  }
-
-  /**
-   * 사용자 생성
-   * @param createUserDto 사용자 정보 객체
-   * @returns Promise<void>
-   */
-  async create(createUserDto: CreateUserDto) : Promise<void>  {
-
-    /** 사용자 조회  */
-    const data = await this.userRepository.findOneBy({ userID: createUserDto.userID });
-
-    /** 데이터 중복  */
-    if (data) {
-      throw new UnprocessableEntityException('중복된 아이디 입니다');
-    }
-
-    /** 개인 salt 만들기  */
-    const salt       =  await createSalt();
-
-    /** 입력 받은 비밀번호 암호화 */
-    const password  = await makePasswordHashed(createUserDto.password, salt);
-
-
-    /** 사용자 입력  */
-    const user = new UserEntity();
-    user.userID    = createUserDto.userID   ;
-    user.userName  = createUserDto.userName ;
-    user.password  = password ;
-    user.salt      = salt     ;
-
-    await this.userRepository.save(user);
   }
 
   /**

@@ -10,6 +10,7 @@ export class AuthMiddleware implements NestMiddleware {
      */
     console.log(req.body);
     console.log(req.query);
+    console.log(req.headers);
     next();
   }
 }
